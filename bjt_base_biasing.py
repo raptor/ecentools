@@ -10,7 +10,12 @@ import sys
 COMMON_RESISTOR_MULTIPLES = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82]
 
 
-def pick(ratio):
+def pick(V_cc, V_b):
+    # Ratio of R1 to R2 is calcualted here
+    ratio = (V_cc - V_b) / V_b
+    
+    print "\n=> Ratio of R1 to R2:  " + str(ratio)
+    
     best_r1 = None
     best_r2 = None
     
@@ -47,10 +52,15 @@ def pick(ratio):
                 best_r1 = r1
                 best_r2 = r2
     
-    print("\n=> Best match:")
-    print("R1:     " + str(best_r1))
-    print("R2:     " + str(best_r2))
-    print("Ratio:  " + str(best_r1/float(best_r2)))
+    print "\n=> Best match:"
+    print "R1:     " + str(best_r1)
+    print "R2:     " + str(best_r2)
+    
+    newratio =  best_r1 / float(best_r2)
+    new_V_b  = V_cc * best_r2 / (best_r1 + best_r2)
+
+    print "Ratio:  " + str(newratio)
+    print "V_b:    " + str(new_V_b)
     
     
     # Reset
@@ -82,9 +92,15 @@ def pick(ratio):
                     best_r2   = r2
 
     print "\n=> If you're willing to use 2 resistors for R1:"
-    print("R1:     " + str(best_r1_1) + " + " + str(best_r1_2))
-    print("R2:     " + str(best_r2))
-    print("Ratio:  " + str( (best_r1_1+best_r1_2)/float(best_r2)) )
+    print "R1:     " + str(best_r1_1) + " + " + str(best_r1_2)
+    print "R2:     " + str(best_r2)
+
+    best_r1 = best_r1_1 + best_r1_2
+    newratio =  best_r1 / float(best_r2)
+    new_V_b  = V_cc * best_r2 / (best_r1 + best_r2)
+
+    print "Ratio:  " + str( newratio )
+    print "V_b:    " + str( new_V_b )
     
     pass
 
@@ -110,13 +126,8 @@ def main():
         V_cc = float(sys.argv[1])
         V_b = float(sys.argv[2])
         
-        
-    # Ratio of R1 to R2 is calcualted here
-    ratio = (V_cc - V_b) / V_b
     
-    print("\n=> Ratio of R1 to R2:  " + str(ratio))
-    
-    pick(ratio)
+    pick(V_cc, V_b)
     
     print "\nNOTE: These are multiples.  Scale these if needed."
     
