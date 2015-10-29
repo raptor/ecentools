@@ -127,7 +127,7 @@ def main():
         V_b = float(sys.argv[2])
         
     
-    pick(V_cc, V_b)
+    pick(float(V_cc), float(V_b))
     
     print "\nNOTE: These are multiples.  Scale these if needed."
     
