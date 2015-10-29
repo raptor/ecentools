@@ -85,7 +85,6 @@ def pick(ratio):
     print("R1:     " + str(best_r1_1) + " + " + str(best_r1_2))
     print("R2:     " + str(best_r2))
     print("Ratio:  " + str( (best_r1_1+best_r1_2)/float(best_r2)) )
-    print ""
     
     pass
 
@@ -99,10 +98,10 @@ def main():
     # Test for parameters
     if not (V_cc and V_b) and len(sys.argv) < 3:
         print "BJT Base biasing"
-        print "Usage: " + sys.argv[0] + " [V_cc] [V_b]"
+        print "Usage: python " + sys.argv[0] + " [V_cc] [V_b]"
         print
         print "Example:"
-        print "  " + sys.argv[0] + " 9 1.08"
+        print "  " + sys.argv[0] + " 9 1.083"
         sys.exit(2)
     
     
