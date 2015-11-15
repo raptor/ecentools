@@ -156,12 +156,14 @@ def pick(V_cc, V_b):
         magnitude = 1000
     
     print "Best Matches:"
+    
     pick_singles(V_cc, ratio, magnitude)
     
     pick_series(V_cc, ratio, magnitude)
     
     pick_parallel(V_cc, ratio, magnitude)
     
+    print "\nNOTE: These are multiples.  Scale these if needed."
     
     pass
 
@@ -189,8 +191,6 @@ def main():
         
     
     pick(float(V_cc), float(V_b))
-    
-    print "\nNOTE: These are multiples.  Scale these if needed."
     
     pass
 
