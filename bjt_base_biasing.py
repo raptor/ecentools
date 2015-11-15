@@ -7,35 +7,19 @@ Created on Oct 28, 2015
 import sys
 
 # Add to these if needed
-COMMON_RESISTOR_MULTIPLES = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82]
+# Use two magnitudes to give some better combinations on edge cases
+COMMON_RESISTOR_MULTIPLES = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82,
+                             100, 120, 150, 180, 220, 270, 330, 390, 470, 560, 680, 820]
 
 
-def pick(V_cc, V_b):
-    # Ratio of R1 to R2 is calcualted here
-    ratio = (V_cc - V_b) / V_b
-    
-    print "\n=> Ratio of R1 to R2:  " + str(ratio)
-    
+def pick_singles(V_cc, ratio, magnitude):
     best_r1 = None
     best_r2 = None
     
     # Really high to start
     best = 999999999
     
-    # Base the magnitude off of the ratio of R1 to R2
-    magnitude = 1;
-    
-    # Lazy...
-    if ratio > 1:
-        magnitude = 1
-    if ratio > 10:
-        magnitude = 10
-    if ratio > 100:
-        magnitude = 100
-    if ratio > 1000:
-        magnitude = 1000
-    
-    # Now loop through all combinations to try and get close to the ratio
+    # Loop through all combinations to try and get close to the ratio
     for r1 in COMMON_RESISTOR_MULTIPLES:
         r1 = r1 * magnitude
         
@@ -52,7 +36,7 @@ def pick(V_cc, V_b):
                 best_r1 = r1
                 best_r2 = r2
     
-    print "\n=> Best match:"
+    print "\n=> 1 Single resistor for R1:"
     print "R1:     " + str(best_r1)
     print "R2:     " + str(best_r2)
     
@@ -62,12 +46,15 @@ def pick(V_cc, V_b):
     print "Ratio:  " + str(newratio)
     print "V_b:    " + str(new_V_b)
     
-    
-    # Reset
-    best = 999999999
+    pass
+
+
+def pick_series(V_cc, ratio, magnitude):
     best_r1_1 = None
     best_r1_2 = None
     best_r2   = None
+    
+    best = 999999999
         
     # Loop through everything again, but add an option to check the addition of
     # two resistors in series for the numerator
@@ -91,7 +78,7 @@ def pick(V_cc, V_b):
                     best_r1_2 = r1_2
                     best_r2   = r2
 
-    print "\n=> If you're willing to use 2 resistors for R1:"
+    print "\n=> 2 series resistors for R1:"
     print "R1:     " + str(best_r1_1) + " + " + str(best_r1_2)
     print "R2:     " + str(best_r2)
 
@@ -101,6 +88,80 @@ def pick(V_cc, V_b):
 
     print "Ratio:  " + str( newratio )
     print "V_b:    " + str( new_V_b )
+    
+    pass
+
+
+def pick_parallel(V_cc, ratio, magnitude):
+    best_r1_1 = None
+    best_r1_2 = None
+    best_r2   = None
+    
+    best = 999999999
+        
+    # Loop through everything again, but add an option to check the addition of
+    # two resistors in series for the numerator
+    for r1_1 in COMMON_RESISTOR_MULTIPLES:
+        r1_1 = r1_1 * magnitude
+        
+        for r1_2 in COMMON_RESISTOR_MULTIPLES:
+            r1_2 = r1_2 * magnitude
+            
+            for r2 in COMMON_RESISTOR_MULTIPLES:
+                # Parallel:  a*b/(a+b)
+                thisRatio = ((r1_1 * r1_2) / (r1_1 + r1_2)) / float(r2)
+                
+                difference = abs(ratio - thisRatio)
+                
+                # Test against previous best match
+                if difference < best:
+                    best = difference
+                    
+                    # Save our better match
+                    best_r1_1 = r1_1
+                    best_r1_2 = r1_2
+                    best_r2   = r2
+
+    print "\n=> 2 parallel resistors for R1:"
+    print "R1:     " + str(best_r1_1) + " || " + str(best_r1_2)
+    print "R2:     " + str(best_r2)
+
+    best_r1 = (best_r1_1 * best_r1_2) / float(best_r1_1 + best_r1_2)
+    newratio =  best_r1 / float(best_r2)
+    new_V_b  = V_cc * best_r2 / (best_r1 + best_r2)
+
+    print "Ratio:  " + str( newratio )
+    print "V_b:    " + str( new_V_b )
+    
+    pass
+
+
+def pick(V_cc, V_b):
+    # Ratio of R1 to R2 is calcualted here
+    ratio = (V_cc - V_b) / V_b
+    
+    print "\n=> Ratio of R1 to R2:  " + str(ratio)
+    
+    # Base the magnitude off of the ratio of R1 to R2
+    magnitude = 1;
+    
+    # Lazy...
+    if ratio > 1:
+        magnitude = 1
+    if ratio > 10:
+        magnitude = 10
+    if ratio > 100:
+        magnitude = 100
+    if ratio > 1000:
+        magnitude = 1000
+    
+    print "Best Matches:"
+    pick_singles(V_cc, ratio, magnitude)
+    
+    pick_series(V_cc, ratio, magnitude)
+    
+    pick_parallel(V_cc, ratio, magnitude)
+    
     
     pass
 
